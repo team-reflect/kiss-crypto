@@ -79,7 +79,7 @@ export const decrypt = async ({
     version,
     nonce,
     ciphertext
-  ] = encryptedMessage.split(PARTITION)
+  ] = encryptedMessage.split(PARTITION, 3)
 
   if (version < Defaults.Version) {
     throw new Error(`Invalid version: ${version}`)
