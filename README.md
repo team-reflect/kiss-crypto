@@ -5,6 +5,8 @@ Easily encrypt and decrypt messages. All the complexity is hidden behind the sce
 ## Usage
 
 ```typescript
+import {encrypt, decrypt, generateEncryptionKey} from 'standard-crypto'
+
 const key = await generateEncryptionKey()
 
 const plaintext = 'hello world'
