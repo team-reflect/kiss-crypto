@@ -24,7 +24,7 @@ const decrypted = await decrypt({
 expect(decrypted).toEqual(plaintext)
 ```
 
-## And to turn passwords into encryption keys
+And to turn passwords into encryption keys
 
 ```typescript
 const password = 'password1'
