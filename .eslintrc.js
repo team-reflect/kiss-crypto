@@ -2,9 +2,11 @@ module.exports = {
   'env': {
     'browser': true,
     'es2021': true,
+    'node': true,
   },
   'extends': [
-    'google',
+    'eslint:recommended',
+    'plugin:@typescript-eslint/recommended'
   ],
   'parser': '@typescript-eslint/parser',
   'parserOptions': {
@@ -15,5 +17,16 @@ module.exports = {
     '@typescript-eslint',
   ],
   'rules': {
+    'quotes': [
+      'error',
+      'single',
+    ],
+    'semi': [
+      'error',
+      'never',
+    ],
+    '@typescript-eslint/no-explicit-any': 'off',
+    '@typescript-eslint/explicit-module-boundary-types': 'off',
+    '@typescript-eslint/no-non-null-assertion': 'off',
   },
-};
+}
