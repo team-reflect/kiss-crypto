@@ -27,11 +27,18 @@ export enum Defaults {
 
 /**
  * Generates a random key in hex format
- * @param bits - Optional length of key in bits
  * @returns A string key in hex format
  */
-export const generateEncryptionKey = (length:number = Defaults.EncryptionKeyLength) => {
-  return generateRandomKey(length)
+export const generateEncryptionKey = () => {
+  return generateRandomKey(Defaults.EncryptionKeyLength)
+}
+
+/**
+ * Generates a random key in hex format
+ * @returns A string key in hex format
+ */
+export const generateSalt = () => {
+  return generateRandomKey(Defaults.ArgonSaltLength)
 }
 
 /**
@@ -92,13 +99,36 @@ export const decrypt = async ({
  * Derives a key from a password and salt using
  * argon2id (crypto_pwhash_ALG_DEFAULT).
  * @param password - Plain text string
+ * @param salt - Hex salt string (use generateSalt())
  * @returns Derived key in hex format
  */
-export const hashPassword = async (password: Utf8String): Promise<HexString> => {
-  const salt = await generateRandomKey(Defaults.ArgonSaltLength)
+export const hashPassword = async ({
+  password,
+  salt,
+  iterations = Defaults.ArgonIterations,
+  bytes = Defaults.ArgonMemLimit,
+  length = Defaults.ArgonSaltSeedLength,
+}: {
+  password: Utf8String,
+  salt: HexString,
+  iterations?: number,
+  bytes?: number,
+  length?: number
+}): Promise<HexString> => {
+  await sodium.ready
 
-  return argon2_hash({password, salt})
+  const result = sodium.crypto_pwhash(
+    length,
+    await stringToArrayBuffer(password),
+    await hexStringToArrayBuffer(salt),
+    iterations,
+    bytes,
+    sodium.crypto_pwhash_ALG_DEFAULT,
+    'hex'
+  )
+  return result
 }
+
 
 // Private functions
 
@@ -147,30 +177,4 @@ const xChaChaDecrypt = async ({
   )
 }
 
-const argon2_hash = async ({
-  password,
-  salt,
-  iterations = Defaults.ArgonIterations,
-  bytes = Defaults.ArgonMemLimit,
-  length = Defaults.ArgonSaltSeedLength,
-}: {
-  password: Utf8String,
-  salt: HexString,
-  iterations?: number,
-  bytes?: number,
-  length?: number
-}): Promise<HexString> => {
-  await sodium.ready
-
-  const result = sodium.crypto_pwhash(
-    length,
-    await stringToArrayBuffer(password),
-    await hexStringToArrayBuffer(salt),
-    iterations,
-    bytes,
-    sodium.crypto_pwhash_ALG_DEFAULT,
-    'hex'
-  )
-  return result
-}
 
