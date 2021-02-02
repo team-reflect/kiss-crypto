@@ -1,11 +1,11 @@
-# standard-crypto
+# kiss-crypto
 
 Easily encrypt and decrypt messages. All the complexity is hidden behind the scenes.
 
 ## Usage
 
 ```typescript
-import {encrypt, decrypt, generateEncryptionKey} from 'standard-crypto'
+import {encrypt, decrypt, generateEncryptionKey} from 'kiss-crypto'
 
 const key = await generateEncryptionKey()
 
@@ -28,7 +28,8 @@ And to turn passwords into encryption keys
 
 ```typescript
 const password = 'password1'
-const hash = await hashPassword(password)
+const salt = generateSalt()
+const hash = await hashPassword(password, salt)
 
 expect(hash.length).toEqual(512)
 ```
