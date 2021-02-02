@@ -1,9 +1,10 @@
 {
   "name": "kiss-crypto",
-  "version": "0.0.5",
+  "version": "0.0.7",
   "description": "",
   "main": "dist/index.js",
   "typings": "dist/index.d.ts",
+  "files": ["dist/**/*"],
   "scripts": {
     "test": "jest",
     "build": "tsc"
