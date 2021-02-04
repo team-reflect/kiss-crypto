@@ -16,7 +16,7 @@ const PARTITION = ':'
 
 export enum Defaults {
   Version = '001',
-  ArgonSaltSeedLength = 256,
+  ArgonLength = 32,
   ArgonSaltLength = 128,
   ArgonIterations = 5,
   ArgonMemLimit = 67108864,
@@ -107,7 +107,7 @@ export const hashPassword = async ({
   salt,
   iterations = Defaults.ArgonIterations,
   bytes = Defaults.ArgonMemLimit,
-  length = Defaults.ArgonSaltSeedLength,
+  length = Defaults.ArgonLength,
 }: {
   password: Utf8String,
   salt: HexString,
