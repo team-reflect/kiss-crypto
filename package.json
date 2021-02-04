@@ -1,6 +1,6 @@
 {
   "name": "kiss-crypto",
-  "version": "0.0.8",
+  "version": "0.0.9",
   "description": "",
   "main": "dist/index.js",
   "typings": "dist/index.d.ts",
@@ -9,7 +9,8 @@
   ],
   "scripts": {
     "test": "jest",
-    "build": "tsc"
+    "build": "tsc",
+    "prepack": "yarn build"
   },
   "author": "",
   "license": "MIT",
