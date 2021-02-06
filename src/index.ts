@@ -1,10 +1,12 @@
+import * as sha256 from 'fast-sha256'
 import * as sodium from './libsodium'
 import {
   arrayBufferToBase64,
+  arrayBufferToHexString,
   base64ToArrayBuffer,
   generateRandomKey,
   hexStringToArrayBuffer,
-  stringToArrayBuffer
+  stringToArrayBuffer,
 } from './utils'
 
 export type HexString = string
@@ -93,6 +95,31 @@ export const decrypt = async ({
   }
 
   return xChaChaDecrypt({key, ciphertext, nonce})
+}
+
+/**
+ * Securely hashes a key with a salt using HKDF-SHA256
+ * @param key - Plain text string
+ * @param salt - Hex salt string (use generateSalt())
+ * @returns Hashed key in hex format
+ */
+export const hash = async ({
+  key,
+  salt,
+  length = undefined
+} : {
+  key: Utf8String,
+  salt: HexString,
+  length?: number | undefined
+}):Promise<HexString> => {
+  const result = sha256.hkdf(
+    await stringToArrayBuffer(key),
+    await stringToArrayBuffer(salt),
+    undefined,
+    length
+  )
+
+  return arrayBufferToHexString(result)
 }
 
 /**

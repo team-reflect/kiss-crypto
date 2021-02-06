@@ -1,4 +1,4 @@
-import { decrypt, encrypt, generateEncryptionKey, generateSalt, hashPassword } from '.'
+import { decrypt, encrypt, generateEncryptionKey, generateSalt, hash, hashPassword } from '.'
 
 it('encrypts/decrypts', async function () {
   const key = await generateEncryptionKey()
@@ -26,6 +26,15 @@ it('hashes a password', async function () {
   expect(hash1.length).toEqual(64)
 
   const hash2 = await hashPassword({password, salt})
+  expect(hash1).toEqual(hash2)
+})
+
+it('hashes a key', async function () {
+  const key = 'key1'
+  const salt = await generateSalt()
+  const hash1 = await hash({key, salt})
+
+  const hash2 = await hash({key, salt})
   expect(hash1).toEqual(hash2)
 })
 
