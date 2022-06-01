@@ -88,3 +88,17 @@ it('encrypts with hashed password', async function () {
 
   expect(decrypted).toEqual(plaintext)
 })
+
+it('sanity checks v001 ciphertext', async function () {
+  const plaintext = 'hello world'
+  const ciphertext =
+    '001:a1caba8a0ff627c4f85d1134a8b69b7e4ede04c0a11c0fe6:6DIAXgI6sFceb8UZWDY7HYcRQ44opn3LTmQo'
+  const key = '513fe9f410236db712a710ae8ab13bd94178fe645f3525756ebf92232a7906cf'
+
+  const decrypted = await decrypt({
+    ciphertext,
+    key,
+  })
+
+  expect(decrypted).toEqual(plaintext)
+})
