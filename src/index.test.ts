@@ -1,6 +1,17 @@
-import { decrypt, encrypt, generateEncryptionKey, generateSalt, hash, hashPassword } from '.'
+import {
+  decrypt,
+  decryptBlob,
+  encrypt,
+  encryptBlob,
+  generateEncryptionKey,
+  generateSalt,
+  hash,
+  hashPassword,
+} from '.'
 
-it('encrypts/decrypts', async function () {
+import {arrayBufferToString, stringToArrayBuffer} from './utils'
+
+it('encrypts/decrypts plaintext', async function () {
   const key = await generateEncryptionKey()
 
   const plaintext = 'hello world'
@@ -16,6 +27,26 @@ it('encrypts/decrypts', async function () {
   })
 
   expect(decrypted).toEqual(plaintext)
+})
+
+it('encrypts/decrypts blobs', async function () {
+  const key = await generateEncryptionKey()
+
+  const plaintext = 'hello world'
+
+  const plainblob = await stringToArrayBuffer(plaintext)
+
+  const cipherblob = await encryptBlob({
+    plainblob,
+    key,
+  })
+
+  const decrypted = await decryptBlob({
+    cipherblob,
+    key,
+  })
+
+  expect(await arrayBufferToString(decrypted!)).toEqual(plaintext)
 })
 
 it('hashes a password', async function () {
