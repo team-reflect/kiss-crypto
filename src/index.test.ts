@@ -1,6 +1,17 @@
-import { decrypt, encrypt, generateEncryptionKey, generateSalt, hash, hashPassword } from '.'
+import {
+  decrypt,
+  decryptBlob,
+  encrypt,
+  encryptBlob,
+  generateEncryptionKey,
+  generateSalt,
+  hash,
+  hashPassword,
+} from '.'
 
-it('encrypts/decrypts', async function () {
+import {arrayBufferToString, stringToArrayBuffer} from './utils'
+
+it('encrypts/decrypts plaintext', async function () {
   const key = await generateEncryptionKey()
 
   const plaintext = 'hello world'
@@ -16,6 +27,26 @@ it('encrypts/decrypts', async function () {
   })
 
   expect(decrypted).toEqual(plaintext)
+})
+
+it('encrypts/decrypts blobs', async function () {
+  const key = await generateEncryptionKey()
+
+  const plaintext = 'hello world'
+
+  const plainblob = await stringToArrayBuffer(plaintext)
+
+  const cipherblob = await encryptBlob({
+    plainblob,
+    key,
+  })
+
+  const decrypted = await decryptBlob({
+    cipherblob,
+    key,
+  })
+
+  expect(await arrayBufferToString(decrypted!)).toEqual(plaintext)
 })
 
 it('hashes a password', async function () {
@@ -49,6 +80,20 @@ it('encrypts with hashed password', async function () {
     plaintext,
     key,
   })
+
+  const decrypted = await decrypt({
+    ciphertext,
+    key,
+  })
+
+  expect(decrypted).toEqual(plaintext)
+})
+
+it('sanity checks v001 ciphertext', async function () {
+  const plaintext = 'hello world'
+  const ciphertext =
+    '001:a1caba8a0ff627c4f85d1134a8b69b7e4ede04c0a11c0fe6:6DIAXgI6sFceb8UZWDY7HYcRQ44opn3LTmQo'
+  const key = '513fe9f410236db712a710ae8ab13bd94178fe645f3525756ebf92232a7906cf'
 
   const decrypted = await decrypt({
     ciphertext,
