@@ -28,8 +28,8 @@ And to turn passwords into encryption keys
 
 ```typescript
 const password = 'password1'
-const salt = generateSalt()
-const hash = await hashPassword(password, salt)
+const salt = await generateSalt()
+const hash = await hashPassword({password, salt})
 
 expect(hash.length).toEqual(512)
 ```
