@@ -60,6 +60,16 @@ it('hashes a password', async function () {
   expect(hash1).toEqual(hash2)
 })
 
+it('sanity checks password hashes', async function () {
+  const password = 'password1'
+  const salt = 'cfebdb6da2d9167786c83cce87963692'
+  const hash1 = await hashPassword({password, salt})
+
+  expect(hash1).toMatchInlineSnapshot(
+    '"29057df69d9940bab07be1afb4c9f1867addff3f092591f23b50152b63bcdf86"',
+  )
+})
+
 it('hashes a key', async function () {
   const key = 'key1'
   const salt = await generateSalt()
@@ -67,6 +77,16 @@ it('hashes a key', async function () {
 
   const hash2 = await hash({key, salt})
   expect(hash1).toEqual(hash2)
+})
+
+it('sanity checks hashes', async function () {
+  const key = 'key1'
+  const salt = '04450d2470c9d3e63259da24f4cddb7e'
+  const hash1 = await hash({key, salt})
+
+  expect(hash1).toMatchInlineSnapshot(
+    '"c61ba75858ee4507e940d18a00d05d655919e1d71b6166e5e86c405828cda2de"',
+  )
 })
 
 it('encrypts with hashed password', async function () {
