@@ -1,5 +1,5 @@
-import * as u from '@noble/hashes/utils';
-import { base64 } from '@scure/base';
+import * as u from '@noble/hashes/utils'
+import { base64 } from '@scure/base'
 
 export const hexStringToArrayBuffer = async (hex: string): Promise<Uint8Array> => {
   return u.hexToBytes(hex)

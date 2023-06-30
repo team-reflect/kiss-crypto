@@ -9,9 +9,9 @@ import {
   stringToArrayBuffer,
 } from './utils'
 import { xchacha20_poly1305 } from '@noble/ciphers/chacha'
-import { argon2id } from '@noble/hashes/argon2';
-import { sha256 } from '@noble/hashes/sha256';
-import { hkdf } from '@noble/hashes/hkdf';
+import { argon2id } from '@noble/hashes/argon2'
+import { sha256 } from '@noble/hashes/sha256'
+import { hkdf } from '@noble/hashes/hkdf'
 
 export type HexString = string
 export type Utf8String = string
@@ -168,7 +168,7 @@ export const hash = async ({
   salt: HexString
   length?: number | undefined
 }): Promise<HexString> => {
-  const result = hkdf(sha256, await stringToArrayBuffer(key), await stringToArrayBuffer(salt), undefined, length);
+  const result = hkdf(sha256, await stringToArrayBuffer(key), await stringToArrayBuffer(salt), undefined, length)
   return arrayBufferToHexString(result)
 }
 
@@ -192,7 +192,7 @@ export const hashPassword = async ({
   bytes?: number
   length?: number
 }): Promise<HexString> => {
-  const result = argon2id(password, await hexStringToArrayBuffer(salt), { t: iterations, p: 1, m: 65536, maxmem: bytes, dkLen: length });
+  const result = argon2id(password, await hexStringToArrayBuffer(salt), { t: iterations, p: 1, m: 65536, maxmem: bytes, dkLen: length })
   return arrayBufferToHexString(result)
 }
 
@@ -208,8 +208,8 @@ const xChaChaEncrypt = async ({
   nonce: HexString
 }): Promise<Base64String> => {
   if (nonce.length !== 48) throw Error('Nonce must be 24 bytes')
-  const plainblob = new TextEncoder().encode(plaintext);
-  const arrayBuffer = xchacha20_poly1305(await hexStringToArrayBuffer(key), await hexStringToArrayBuffer(nonce)).encrypt(plainblob);
+  const plainblob = new TextEncoder().encode(plaintext)
+  const arrayBuffer = xchacha20_poly1305(await hexStringToArrayBuffer(key), await hexStringToArrayBuffer(nonce)).encrypt(plainblob)
   return arrayBufferToBase64(arrayBuffer)
 }
 
@@ -225,7 +225,7 @@ const xChaChaEncryptBlob = async ({
   if (nonceBuffer.length !== 24) {
     throw Error('nonceBuffer must be 24 bytes')
   }
-  return xchacha20_poly1305(await hexStringToArrayBuffer(key), nonceBuffer).encrypt(plainblob);
+  return xchacha20_poly1305(await hexStringToArrayBuffer(key), nonceBuffer).encrypt(plainblob)
 }
 
 const xChaChaDecrypt = async ({
@@ -237,8 +237,8 @@ const xChaChaDecrypt = async ({
   ciphertext: Base64String
   nonce: HexString
 }): Promise<Utf8String | null> => {
-  const arr = xchacha20_poly1305(await hexStringToArrayBuffer(key), await hexStringToArrayBuffer(nonce)).decrypt(await base64ToArrayBuffer(ciphertext));
-  return new TextDecoder().decode(arr);
+  const arr = xchacha20_poly1305(await hexStringToArrayBuffer(key), await hexStringToArrayBuffer(nonce)).decrypt(await base64ToArrayBuffer(ciphertext))
+  return new TextDecoder().decode(arr)
 }
 
 const xChaChaDecryptBlob = async ({
@@ -250,5 +250,5 @@ const xChaChaDecryptBlob = async ({
   cipherblob: EncryptedBlobMessage
   nonceBuffer: Uint8Array
 }): Promise<Uint8Array | null> => {
-  return xchacha20_poly1305(await hexStringToArrayBuffer(key), nonceBuffer).decrypt(cipherblob);
+  return xchacha20_poly1305(await hexStringToArrayBuffer(key), nonceBuffer).decrypt(cipherblob)
 }
