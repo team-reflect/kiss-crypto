@@ -17,4 +17,4 @@ export {
   to_base64,
   to_hex,
   to_string,
-} from 'libsodium-wrappers'
+} from 'libsodium-wrappers-sumo'
