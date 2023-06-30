@@ -1,4 +1,3 @@
-import * as sha256 from 'fast-sha256'
 import * as sodium from './libsodium'
 import {
   arrayBufferToBase64,
@@ -10,6 +9,9 @@ import {
   hexStringToArrayBuffer,
   stringToArrayBuffer,
 } from './utils'
+import { xchacha20_poly1305 } from '@noble/ciphers/chacha'
+import { sha256 } from '@noble/hashes/sha256';
+import { hkdf } from '@noble/hashes/hkdf';
 
 export type HexString = string
 export type Utf8String = string
@@ -166,13 +168,7 @@ export const hash = async ({
   salt: HexString
   length?: number | undefined
 }): Promise<HexString> => {
-  const result = sha256.hkdf(
-    await stringToArrayBuffer(key),
-    await stringToArrayBuffer(salt),
-    undefined,
-    length,
-  )
-
+  const result = hkdf(sha256, await stringToArrayBuffer(key), await stringToArrayBuffer(salt), undefined, length);
   return arrayBufferToHexString(result)
 }
 
@@ -221,20 +217,9 @@ const xChaChaEncrypt = async ({
   plaintext: Utf8String
   nonce: HexString
 }): Promise<Base64String> => {
-  await sodium.ready
-
-  if (nonce.length !== 48) {
-    throw Error('Nonce must be 48 bytes')
-  }
-
-  const arrayBuffer = sodium.crypto_aead_xchacha20poly1305_ietf_encrypt(
-    plaintext,
-    null,
-    null,
-    await hexStringToArrayBuffer(nonce),
-    await hexStringToArrayBuffer(key),
-  )
-
+  if (nonce.length !== 48) throw Error('Nonce must be 24 bytes')
+  const plainblob = new TextEncoder().encode(plaintext);
+  const arrayBuffer = xchacha20_poly1305(await hexStringToArrayBuffer(key), await hexStringToArrayBuffer(nonce)).encrypt(plainblob);
   return arrayBufferToBase64(arrayBuffer)
 }
 
@@ -247,19 +232,10 @@ const xChaChaEncryptBlob = async ({
   plainblob: Uint8Array
   nonceBuffer: Uint8Array
 }): Promise<Uint8Array> => {
-  await sodium.ready
-
   if (nonceBuffer.length !== 24) {
     throw Error('nonceBuffer must be 24 bytes')
   }
-
-  return sodium.crypto_aead_xchacha20poly1305_ietf_encrypt(
-    plainblob,
-    null,
-    null,
-    nonceBuffer,
-    await hexStringToArrayBuffer(key),
-  )
+  return xchacha20_poly1305(await hexStringToArrayBuffer(key), nonceBuffer).encrypt(plainblob);
 }
 
 const xChaChaDecrypt = async ({
@@ -271,16 +247,8 @@ const xChaChaDecrypt = async ({
   ciphertext: Base64String
   nonce: HexString
 }): Promise<Utf8String | null> => {
-  await sodium.ready
-
-  return sodium.crypto_aead_xchacha20poly1305_ietf_decrypt(
-    null,
-    await base64ToArrayBuffer(ciphertext),
-    null,
-    await hexStringToArrayBuffer(nonce),
-    await hexStringToArrayBuffer(key),
-    'text',
-  )
+  const arr = xchacha20_poly1305(await hexStringToArrayBuffer(key), await hexStringToArrayBuffer(nonce)).decrypt(await base64ToArrayBuffer(ciphertext));
+  return new TextDecoder().decode(arr);
 }
 
 const xChaChaDecryptBlob = async ({
@@ -292,14 +260,5 @@ const xChaChaDecryptBlob = async ({
   cipherblob: EncryptedBlobMessage
   nonceBuffer: Uint8Array
 }): Promise<Uint8Array | null> => {
-  await sodium.ready
-
-  return sodium.crypto_aead_xchacha20poly1305_ietf_decrypt(
-    null,
-    cipherblob,
-    null,
-    nonceBuffer,
-    await hexStringToArrayBuffer(key),
-    'uint8array',
-  )
+  return xchacha20_poly1305(await hexStringToArrayBuffer(key), nonceBuffer).decrypt(cipherblob);
 }
