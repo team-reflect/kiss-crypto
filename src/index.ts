@@ -162,7 +162,7 @@ export function decryptBlob({
 export function hash({
   key,
   salt,
-  length = 64,
+  length = 32,
 }: {
   key: Utf8String
   salt: HexString
