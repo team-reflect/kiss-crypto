@@ -1,4 +1,3 @@
-import * as sodium from './libsodium'
 import {
   arrayBufferToBase64,
   arrayBufferToHexString,
@@ -10,6 +9,7 @@ import {
   stringToArrayBuffer,
 } from './utils'
 import { xchacha20_poly1305 } from '@noble/ciphers/chacha'
+import { argon2id } from '@noble/hashes/argon2';
 import { sha256 } from '@noble/hashes/sha256';
 import { hkdf } from '@noble/hashes/hkdf';
 
@@ -192,18 +192,8 @@ export const hashPassword = async ({
   bytes?: number
   length?: number
 }): Promise<HexString> => {
-  await sodium.ready
-
-  const result = sodium.crypto_pwhash(
-    length,
-    await stringToArrayBuffer(password),
-    await hexStringToArrayBuffer(salt),
-    iterations,
-    bytes,
-    sodium.crypto_pwhash_ALG_DEFAULT,
-    'hex',
-  )
-  return result
+  const result = argon2id(password, await hexStringToArrayBuffer(salt), { t: iterations, p: 1, m: 65536, maxmem: bytes, dkLen: length });
+  return arrayBufferToHexString(result)
 }
 
 // Private functions

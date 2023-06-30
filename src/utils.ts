@@ -1,44 +1,28 @@
-import {
-  base64_variants,
-  from_base64,
-  from_hex,
-  from_string,
-  ready,
-  to_base64,
-  to_hex,
-  to_string,
-} from './libsodium'
-
-const BASE64_VARIANT = base64_variants.ORIGINAL
+import * as u from '@noble/hashes/utils';
+import { base64 } from '@scure/base';
 
 export const hexStringToArrayBuffer = async (hex: string): Promise<Uint8Array> => {
-  await ready
-  return from_hex(hex)
+  return u.hexToBytes(hex)
 }
 
 export async function arrayBufferToBase64(arrayBuffer: Uint8Array): Promise<string> {
-  await ready
-  return to_base64(arrayBuffer, BASE64_VARIANT)
+  return base64.encode(arrayBuffer)
 }
 
-export async function base64ToArrayBuffer(base64: string): Promise<Uint8Array> {
-  await ready
-  return from_base64(base64, BASE64_VARIANT)
+export async function base64ToArrayBuffer(b64: string): Promise<Uint8Array> {
+  return base64.decode(b64)
 }
 
 export async function stringToArrayBuffer(string: string): Promise<Uint8Array> {
-  await ready
-  return from_string(string)
+  return u.utf8ToBytes(string)
 }
 
 export async function arrayBufferToHexString(arrayBuffer: Uint8Array): Promise<string> {
-  await ready
-  return to_hex(arrayBuffer)
+  return u.bytesToHex(arrayBuffer)
 }
 
 export async function arrayBufferToString(arrayBuffer: Uint8Array): Promise<string> {
-  await ready
-  return to_string(arrayBuffer)
+  return new TextDecoder().decode(arrayBuffer)
 }
 
 export const generateRandomKey = async (length: number): Promise<string> => {
@@ -47,11 +31,8 @@ export const generateRandomKey = async (length: number): Promise<string> => {
 }
 
 export const generateRandomUint8Array = async (length: number): Promise<Uint8Array> => {
-  return getRandomValues(new Uint8Array(length))
+  return u.randomBytes(length)
 }
-
-// eslint-disable-next-line @typescript-eslint/no-var-requires
-export const getRandomValues = require('get-random-values')
 
 export const concatUint8Arrays = (...arrays: Uint8Array[]): Uint8Array => {
   const totalLength = arrays.reduce((acc, array) => acc + array.length, 0)
