@@ -8,10 +8,10 @@ import {
   hexStringToArrayBuffer,
   stringToArrayBuffer,
 } from './utils'
-import { xchacha20_poly1305 } from '@noble/ciphers/chacha'
-import { argon2id } from '@noble/hashes/argon2';
-import { sha256 } from '@noble/hashes/sha256';
-import { hkdf } from '@noble/hashes/hkdf';
+import {xchacha20_poly1305} from '@noble/ciphers/chacha'
+import {argon2id} from '@noble/hashes/argon2'
+import {sha256} from '@noble/hashes/sha256'
+import {hkdf} from '@noble/hashes/hkdf'
 
 export type HexString = string
 export type Utf8String = string
@@ -36,7 +36,7 @@ export enum Defaults {
  * Generates a random key in hex format
  * @returns A string key in hex format
  */
-export const generateEncryptionKey = () => {
+export function generateEncryptionKey() {
   return generateRandomKey(Defaults.EncryptionKeyLength)
 }
 
@@ -44,7 +44,7 @@ export const generateEncryptionKey = () => {
  * Generates a random key in hex format
  * @returns A string key in hex format
  */
-export const generateSalt = () => {
+export function generateSalt() {
   return generateRandomKey(Defaults.ArgonSaltLength)
 }
 
@@ -54,16 +54,16 @@ export const generateSalt = () => {
  * @param plaintext
  * @returns Base64 ciphertext string
  */
-export const encrypt = async ({
+export function encrypt({
   key,
   plaintext,
 }: {
   key: HexString
   plaintext: Utf8String
-}): Promise<EncryptedMessage> => {
-  const nonce = await generateRandomKey(Defaults.EncryptionNonceLength)
+}): EncryptedMessage {
+  const nonce = generateRandomKey(Defaults.EncryptionNonceLength)
 
-  const ciphertext = await xChaChaEncrypt({
+  const ciphertext = xChaChaEncrypt({
     key,
     plaintext,
     nonce,
@@ -78,23 +78,23 @@ export const encrypt = async ({
  * @param plainblob - In Uint8Array format
  * @returns Uint8Array ciphertext array
  */
-export const encryptBlob = async ({
+export function encryptBlob({
   key,
   plainblob,
 }: {
   key: HexString
   plainblob: Uint8Array
-}): Promise<EncryptedBlobMessage> => {
-  const nonce = await generateRandomKey(Defaults.EncryptionNonceLength)
-  const nonceBuffer = await hexStringToArrayBuffer(nonce)
+}): EncryptedBlobMessage {
+  const nonce = generateRandomKey(Defaults.EncryptionNonceLength)
+  const nonceBuffer = hexStringToArrayBuffer(nonce)
 
-  const cipherblob = await xChaChaEncryptBlob({
+  const cipherblob = xChaChaEncryptBlob({
     key,
     plainblob,
     nonceBuffer,
   })
 
-  const versionBuffer = await stringToArrayBuffer(Defaults.Version)
+  const versionBuffer = stringToArrayBuffer(Defaults.Version)
 
   return concatUint8Arrays(versionBuffer, nonceBuffer, cipherblob)
 }
@@ -105,13 +105,13 @@ export const encryptBlob = async ({
  * @param ciphertext
  * @returns Plain utf8 string or null if decryption fails
  */
-export const decrypt = async ({
+export function decrypt({
   key,
   ciphertext: encryptedMessage,
 }: {
   key: HexString
   ciphertext: EncryptedMessage
-}): Promise<Utf8String | null> => {
+}): Utf8String | null {
   const [version, nonce, ciphertext] = encryptedMessage.split(STRING_PARTITION, 3)
 
   if (version < Defaults.Version) {
@@ -127,15 +127,15 @@ export const decrypt = async ({
  * @param cipherblob - In Uint8Array format
  * @returns Uint8Array or null if decryption fails
  */
-export const decryptBlob = async ({
+export function decryptBlob({
   key,
   cipherblob: encryptedMessage,
 }: {
   key: HexString
   cipherblob: EncryptedBlobMessage
-}): Promise<Uint8Array | null> => {
+}): Uint8Array | null {
   const versionBuffer = encryptedMessage.slice(0, Defaults.Version.length)
-  const version = await arrayBufferToString(versionBuffer)
+  const version = arrayBufferToString(versionBuffer)
 
   if (version < Defaults.Version) {
     throw new Error(`Invalid version: ${version}`)
@@ -159,16 +159,22 @@ export const decryptBlob = async ({
  * @param salt - Hex salt string (use generateSalt())
  * @returns Hashed key in hex format
  */
-export const hash = async ({
+export function hash({
   key,
   salt,
-  length = undefined,
+  length = 64,
 }: {
   key: Utf8String
   salt: HexString
-  length?: number | undefined
-}): Promise<HexString> => {
-  const result = hkdf(sha256, await stringToArrayBuffer(key), await stringToArrayBuffer(salt), undefined, length);
+  length?: number
+}): HexString {
+  const result = hkdf(
+    sha256,
+    stringToArrayBuffer(key),
+    stringToArrayBuffer(salt),
+    undefined,
+    length,
+  )
   return arrayBufferToHexString(result)
 }
 
@@ -179,7 +185,7 @@ export const hash = async ({
  * @param salt - Hex salt string (use generateSalt())
  * @returns Derived key in hex format
  */
-export const hashPassword = async ({
+export function hashPassword({
   password,
   salt,
   iterations = Defaults.ArgonIterations,
@@ -191,14 +197,20 @@ export const hashPassword = async ({
   iterations?: number
   bytes?: number
   length?: number
-}): Promise<HexString> => {
-  const result = argon2id(password, await hexStringToArrayBuffer(salt), { t: iterations, p: 1, m: 65536, maxmem: bytes, dkLen: length });
+}): HexString {
+  const result = argon2id(password, hexStringToArrayBuffer(salt), {
+    t: iterations,
+    p: 1,
+    m: 65536,
+    maxmem: bytes,
+    dkLen: length,
+  })
   return arrayBufferToHexString(result)
 }
 
 // Private functions
 
-const xChaChaEncrypt = async ({
+function xChaChaEncrypt({
   key,
   plaintext,
   nonce,
@@ -206,14 +218,17 @@ const xChaChaEncrypt = async ({
   key: HexString
   plaintext: Utf8String
   nonce: HexString
-}): Promise<Base64String> => {
+}): Base64String {
   if (nonce.length !== 48) throw Error('Nonce must be 24 bytes')
-  const plainblob = new TextEncoder().encode(plaintext);
-  const arrayBuffer = xchacha20_poly1305(await hexStringToArrayBuffer(key), await hexStringToArrayBuffer(nonce)).encrypt(plainblob);
+  const plainblob = new TextEncoder().encode(plaintext)
+  const arrayBuffer = xchacha20_poly1305(
+    hexStringToArrayBuffer(key),
+    hexStringToArrayBuffer(nonce),
+  ).encrypt(plainblob)
   return arrayBufferToBase64(arrayBuffer)
 }
 
-const xChaChaEncryptBlob = async ({
+function xChaChaEncryptBlob({
   key,
   plainblob,
   nonceBuffer,
@@ -221,14 +236,14 @@ const xChaChaEncryptBlob = async ({
   key: HexString
   plainblob: Uint8Array
   nonceBuffer: Uint8Array
-}): Promise<Uint8Array> => {
+}): Uint8Array {
   if (nonceBuffer.length !== 24) {
     throw Error('nonceBuffer must be 24 bytes')
   }
-  return xchacha20_poly1305(await hexStringToArrayBuffer(key), nonceBuffer).encrypt(plainblob);
+  return xchacha20_poly1305(hexStringToArrayBuffer(key), nonceBuffer).encrypt(plainblob)
 }
 
-const xChaChaDecrypt = async ({
+function xChaChaDecrypt({
   key,
   ciphertext,
   nonce,
@@ -236,12 +251,15 @@ const xChaChaDecrypt = async ({
   key: HexString
   ciphertext: Base64String
   nonce: HexString
-}): Promise<Utf8String | null> => {
-  const arr = xchacha20_poly1305(await hexStringToArrayBuffer(key), await hexStringToArrayBuffer(nonce)).decrypt(await base64ToArrayBuffer(ciphertext));
-  return new TextDecoder().decode(arr);
+}): Utf8String | null {
+  const arr = xchacha20_poly1305(
+    hexStringToArrayBuffer(key),
+    hexStringToArrayBuffer(nonce),
+  ).decrypt(base64ToArrayBuffer(ciphertext))
+  return new TextDecoder().decode(arr)
 }
 
-const xChaChaDecryptBlob = async ({
+function xChaChaDecryptBlob({
   key,
   cipherblob,
   nonceBuffer,
@@ -249,6 +267,6 @@ const xChaChaDecryptBlob = async ({
   key: HexString
   cipherblob: EncryptedBlobMessage
   nonceBuffer: Uint8Array
-}): Promise<Uint8Array | null> => {
-  return xchacha20_poly1305(await hexStringToArrayBuffer(key), nonceBuffer).decrypt(cipherblob);
+}): Uint8Array | null {
+  return xchacha20_poly1305(hexStringToArrayBuffer(key), nonceBuffer).decrypt(cipherblob)
 }

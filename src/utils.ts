@@ -1,40 +1,40 @@
-import * as u from '@noble/hashes/utils';
-import { base64 } from '@scure/base';
+import * as u from '@noble/hashes/utils'
+import {base64} from '@scure/base'
 
-export const hexStringToArrayBuffer = async (hex: string): Promise<Uint8Array> => {
+export function hexStringToArrayBuffer(hex: string): Uint8Array {
   return u.hexToBytes(hex)
 }
 
-export async function arrayBufferToBase64(arrayBuffer: Uint8Array): Promise<string> {
+export function arrayBufferToBase64(arrayBuffer: Uint8Array): string {
   return base64.encode(arrayBuffer)
 }
 
-export async function base64ToArrayBuffer(b64: string): Promise<Uint8Array> {
+export function base64ToArrayBuffer(b64: string): Uint8Array {
   return base64.decode(b64)
 }
 
-export async function stringToArrayBuffer(string: string): Promise<Uint8Array> {
+export function stringToArrayBuffer(string: string): Uint8Array {
   return u.utf8ToBytes(string)
 }
 
-export async function arrayBufferToHexString(arrayBuffer: Uint8Array): Promise<string> {
+export function arrayBufferToHexString(arrayBuffer: Uint8Array): string {
   return u.bytesToHex(arrayBuffer)
 }
 
-export async function arrayBufferToString(arrayBuffer: Uint8Array): Promise<string> {
+export function arrayBufferToString(arrayBuffer: Uint8Array): string {
   return new TextDecoder().decode(arrayBuffer)
 }
 
-export const generateRandomKey = async (length: number): Promise<string> => {
-  const randomValues = await generateRandomUint8Array(length)
+export function generateRandomKey(length: number): string {
+  const randomValues = generateRandomUint8Array(length)
   return arrayBufferToHexString(randomValues)
 }
 
-export const generateRandomUint8Array = async (length: number): Promise<Uint8Array> => {
+export function generateRandomUint8Array(length: number): Uint8Array {
   return u.randomBytes(length)
 }
 
-export const concatUint8Arrays = (...arrays: Uint8Array[]): Uint8Array => {
+export function concatUint8Arrays(...arrays: Uint8Array[]): Uint8Array {
   const totalLength = arrays.reduce((acc, array) => acc + array.length, 0)
   const result = new Uint8Array(totalLength)
 
