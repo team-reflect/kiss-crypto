@@ -10,7 +10,8 @@
   "scripts": {
     "test": "TZ=UTC vitest",
     "build": "tsc",
-    "prepack": "yarn build"
+    "prepack": "yarn build",
+    "lint": "eslint src/**/*.ts"
   },
   "author": "",
   "license": "MIT",
