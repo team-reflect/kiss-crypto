@@ -1,9 +1,8 @@
-import {bytesToHex, hexToBytes, utf8ToBytes} from '@noble/hashes/utils'
+import {bytesToHex, concatBytes, hexToBytes, utf8ToBytes} from '@noble/hashes/utils'
 import {
   arrayBufferToBase64,
   arrayBufferToString,
   base64ToArrayBuffer,
-  concatUint8Arrays,
   generateRandomKey,
 } from './utils'
 import {xchacha20_poly1305} from '@noble/ciphers/chacha'
@@ -94,7 +93,7 @@ export function encryptBlob({
 
   const versionBuffer = utf8ToBytes(Defaults.Version)
 
-  return concatUint8Arrays(versionBuffer, nonceBuffer, cipherblob)
+  return concatBytes(versionBuffer, nonceBuffer, cipherblob)
 }
 
 /**

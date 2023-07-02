@@ -14,12 +14,8 @@ export function arrayBufferToString(arrayBuffer: Uint8Array): string {
 }
 
 export function generateRandomKey(length: number): string {
-  const randomValues = generateRandomUint8Array(length)
+  const randomValues = randomBytes(length)
   return bytesToHex(randomValues)
-}
-
-export function generateRandomUint8Array(length: number): Uint8Array {
-  return randomBytes(length)
 }
 
 export function concatUint8Arrays(...arrays: Uint8Array[]): Uint8Array {
