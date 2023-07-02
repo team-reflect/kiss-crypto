@@ -1,3 +1,4 @@
+import {utf8ToBytes} from '@noble/hashes/utils'
 import {
   decrypt,
   decryptBlob,
@@ -9,7 +10,7 @@ import {
   hashPassword,
 } from '.'
 
-import {arrayBufferToString, stringToArrayBuffer} from './utils'
+import {arrayBufferToString} from './utils'
 
 it('encrypts/decrypts plaintext', function () {
   const key = generateEncryptionKey()
@@ -34,7 +35,7 @@ it('encrypts/decrypts blobs', function () {
 
   const plaintext = 'hello world'
 
-  const plainblob = stringToArrayBuffer(plaintext)
+  const plainblob = utf8ToBytes(plaintext)
 
   const cipherblob = encryptBlob({
     plainblob,
@@ -49,21 +50,21 @@ it('encrypts/decrypts blobs', function () {
   expect(arrayBufferToString(decrypted!)).toEqual(plaintext)
 })
 
-it('hashes a password', function () {
+it('hashes a password', async function () {
   const password = 'password1'
   const salt = generateSalt()
-  const hash1 = hashPassword({password, salt})
+  const hash1 = await hashPassword({password, salt})
 
   expect(hash1.length).toEqual(64)
 
-  const hash2 = hashPassword({password, salt})
+  const hash2 = await hashPassword({password, salt})
   expect(hash1).toEqual(hash2)
 })
 
-it('sanity checks password hashes', function () {
+it('sanity checks password hashes', async function () {
   const password = 'password1'
   const salt = 'cfebdb6da2d9167786c83cce87963692'
-  const hash1 = hashPassword({password, salt})
+  const hash1 = await hashPassword({password, salt})
 
   expect(hash1).toMatchInlineSnapshot(
     '"29057df69d9940bab07be1afb4c9f1867addff3f092591f23b50152b63bcdf86"',
@@ -89,10 +90,10 @@ it('sanity checks hashes', function () {
   )
 })
 
-it('encrypts with hashed password', function () {
+it('encrypts with hashed password', async function () {
   const password = 'password1'
   const salt = generateSalt()
-  const key = hashPassword({password, salt})
+  const key = await hashPassword({password, salt})
 
   const plaintext = 'hello world'
 

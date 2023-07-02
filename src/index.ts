@@ -1,17 +1,15 @@
+import {bytesToHex, hexToBytes, utf8ToBytes} from '@noble/hashes/utils'
 import {
   arrayBufferToBase64,
-  arrayBufferToHexString,
   arrayBufferToString,
   base64ToArrayBuffer,
   concatUint8Arrays,
   generateRandomKey,
-  hexStringToArrayBuffer,
-  stringToArrayBuffer,
 } from './utils'
 import {xchacha20_poly1305} from '@noble/ciphers/chacha'
-import {argon2id} from '@noble/hashes/argon2'
 import {sha256} from '@noble/hashes/sha256'
 import {hkdf} from '@noble/hashes/hkdf'
+import {argon2id} from 'hash-wasm'
 
 export type HexString = string
 export type Utf8String = string
@@ -86,7 +84,7 @@ export function encryptBlob({
   plainblob: Uint8Array
 }): EncryptedBlobMessage {
   const nonce = generateRandomKey(Defaults.EncryptionNonceLength)
-  const nonceBuffer = hexStringToArrayBuffer(nonce)
+  const nonceBuffer = hexToBytes(nonce)
 
   const cipherblob = xChaChaEncryptBlob({
     key,
@@ -94,7 +92,7 @@ export function encryptBlob({
     nonceBuffer,
   })
 
-  const versionBuffer = stringToArrayBuffer(Defaults.Version)
+  const versionBuffer = utf8ToBytes(Defaults.Version)
 
   return concatUint8Arrays(versionBuffer, nonceBuffer, cipherblob)
 }
@@ -168,14 +166,8 @@ export function hash({
   salt: HexString
   length?: number
 }): HexString {
-  const result = hkdf(
-    sha256,
-    stringToArrayBuffer(key),
-    stringToArrayBuffer(salt),
-    undefined,
-    length,
-  )
-  return arrayBufferToHexString(result)
+  const result = hkdf(sha256, utf8ToBytes(key), utf8ToBytes(salt), undefined, length)
+  return bytesToHex(result)
 }
 
 /**
@@ -185,7 +177,7 @@ export function hash({
  * @param salt - Hex salt string (use generateSalt())
  * @returns Derived key in hex format
  */
-export function hashPassword({
+export async function hashPassword({
   password,
   salt,
   iterations = Defaults.ArgonIterations,
@@ -197,15 +189,17 @@ export function hashPassword({
   iterations?: number
   bytes?: number
   length?: number
-}): HexString {
-  const result = argon2id(password, hexStringToArrayBuffer(salt), {
-    t: iterations,
-    p: 1,
-    m: 65536,
+}): Promise<HexString> {
+  return argon2id({
+    password,
+    salt: hexToBytes(salt),
+    iterations,
+    parallelism: 1,
+    memorySize: 65536,
     maxmem: bytes,
-    dkLen: length,
+    hashLength: length,
+    outputType: 'hex',
   })
-  return arrayBufferToHexString(result)
 }
 
 // Private functions
@@ -221,10 +215,9 @@ function xChaChaEncrypt({
 }): Base64String {
   if (nonce.length !== 48) throw Error('Nonce must be 24 bytes')
   const plainblob = new TextEncoder().encode(plaintext)
-  const arrayBuffer = xchacha20_poly1305(
-    hexStringToArrayBuffer(key),
-    hexStringToArrayBuffer(nonce),
-  ).encrypt(plainblob)
+  const arrayBuffer = xchacha20_poly1305(hexToBytes(key), hexToBytes(nonce)).encrypt(
+    plainblob,
+  )
   return arrayBufferToBase64(arrayBuffer)
 }
 
@@ -240,7 +233,7 @@ function xChaChaEncryptBlob({
   if (nonceBuffer.length !== 24) {
     throw Error('nonceBuffer must be 24 bytes')
   }
-  return xchacha20_poly1305(hexStringToArrayBuffer(key), nonceBuffer).encrypt(plainblob)
+  return xchacha20_poly1305(hexToBytes(key), nonceBuffer).encrypt(plainblob)
 }
 
 function xChaChaDecrypt({
@@ -252,10 +245,9 @@ function xChaChaDecrypt({
   ciphertext: Base64String
   nonce: HexString
 }): Utf8String | null {
-  const arr = xchacha20_poly1305(
-    hexStringToArrayBuffer(key),
-    hexStringToArrayBuffer(nonce),
-  ).decrypt(base64ToArrayBuffer(ciphertext))
+  const arr = xchacha20_poly1305(hexToBytes(key), hexToBytes(nonce)).decrypt(
+    base64ToArrayBuffer(ciphertext),
+  )
   return new TextDecoder().decode(arr)
 }
 
@@ -268,5 +260,5 @@ function xChaChaDecryptBlob({
   cipherblob: EncryptedBlobMessage
   nonceBuffer: Uint8Array
 }): Uint8Array | null {
-  return xchacha20_poly1305(hexStringToArrayBuffer(key), nonceBuffer).decrypt(cipherblob)
+  return xchacha20_poly1305(hexToBytes(key), nonceBuffer).decrypt(cipherblob)
 }
