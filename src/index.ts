@@ -51,6 +51,9 @@ export const generateSalt = () => {
  * @param key - In hex format
  * @param plaintext
  * @returns Base64 ciphertext string
+ *
+ * @deprecated This function converts cipherblob to base64 string, which is not
+ * efficient. Use one of the functions that return blob instead.
  */
 export const encrypt = async ({
   key,
