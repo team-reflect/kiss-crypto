@@ -71,6 +71,24 @@ export const encrypt = async ({
 }
 
 /**
+ * Encrypt a plaintext string and output it as a Uint8Array blob.
+ * @param key - The encryption key in hex format.
+ * @param plaintext - The plaintext string to encrypt.
+ * @returns A Promise that resolves to the encrypted message as a Uint8Array.
+ */
+export const encryptStringAsBlob = async ({
+  key,
+  plaintext,
+}: {
+  key: HexString
+  plaintext: Utf8String
+}): Promise<EncryptedBlobMessage> => {
+  const plainblob = await stringToArrayBuffer(plaintext)
+
+  return encryptBlob({key, plainblob})
+}
+
+/**
  * Encrypt a message (and associated data) with XChaCha20-Poly1305.
  * @param key - In hex format
  * @param plainblob - In Uint8Array format
@@ -117,6 +135,26 @@ export const decrypt = async ({
   }
 
   return xChaChaDecrypt({key, ciphertext, nonce})
+}
+
+/**
+ * Decrypt an encrypted blob message and output it as a plaintext string.
+ * @param key - The decryption key in hex format.
+ * @param cipherblob - The encrypted message as a Uint8Array.
+ * @returns A Promise that resolves to the decrypted plaintext string or null if decryption fails.
+ */
+export const decryptBlobAsString = async ({
+  key,
+  cipherblob,
+}: {
+  key: HexString
+  cipherblob: EncryptedBlobMessage
+}): Promise<Utf8String | null> => {
+  const decryptedBlob = await decryptBlob({key, cipherblob})
+
+  if (!decryptedBlob) return null
+
+  return arrayBufferToString(decryptedBlob)
 }
 
 /**
