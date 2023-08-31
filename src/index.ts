@@ -5,7 +5,7 @@ import {
   base64ToArrayBuffer,
   generateRandomKey,
 } from './utils'
-import {xchacha20_poly1305} from '@noble/ciphers/chacha'
+import {xchacha20poly1305} from '@noble/ciphers/chacha'
 import {sha256} from '@noble/hashes/sha256'
 import {hkdf} from '@noble/hashes/hkdf'
 import {argon2id} from 'hash-wasm'
@@ -214,7 +214,7 @@ function xChaChaEncrypt({
 }): Base64String {
   if (nonce.length !== 48) throw Error('Nonce must be 24 bytes')
   const plainblob = new TextEncoder().encode(plaintext)
-  const arrayBuffer = xchacha20_poly1305(hexToBytes(key), hexToBytes(nonce)).encrypt(
+  const arrayBuffer = xchacha20poly1305(hexToBytes(key), hexToBytes(nonce)).encrypt(
     plainblob,
   )
   return arrayBufferToBase64(arrayBuffer)
@@ -232,7 +232,7 @@ function xChaChaEncryptBlob({
   if (nonceBuffer.length !== 24) {
     throw Error('nonceBuffer must be 24 bytes')
   }
-  return xchacha20_poly1305(hexToBytes(key), nonceBuffer).encrypt(plainblob)
+  return xchacha20poly1305(hexToBytes(key), nonceBuffer).encrypt(plainblob)
 }
 
 function xChaChaDecrypt({
@@ -244,7 +244,7 @@ function xChaChaDecrypt({
   ciphertext: Base64String
   nonce: HexString
 }): Utf8String | null {
-  const arr = xchacha20_poly1305(hexToBytes(key), hexToBytes(nonce)).decrypt(
+  const arr = xchacha20poly1305(hexToBytes(key), hexToBytes(nonce)).decrypt(
     base64ToArrayBuffer(ciphertext),
   )
   return new TextDecoder().decode(arr)
@@ -259,5 +259,5 @@ function xChaChaDecryptBlob({
   cipherblob: EncryptedBlobMessage
   nonceBuffer: Uint8Array
 }): Uint8Array | null {
-  return xchacha20_poly1305(hexToBytes(key), nonceBuffer).decrypt(cipherblob)
+  return xchacha20poly1305(hexToBytes(key), nonceBuffer).decrypt(cipherblob)
 }
