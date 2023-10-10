@@ -1,0 +1,10 @@
+export declare const hexStringToArrayBuffer: (hex: string) => Promise<Uint8Array>;
+export declare function arrayBufferToBase64(arrayBuffer: Uint8Array): Promise<string>;
+export declare function base64ToArrayBuffer(base64: string): Promise<Uint8Array>;
+export declare function stringToArrayBuffer(string: string): Promise<Uint8Array>;
+export declare function arrayBufferToHexString(arrayBuffer: Uint8Array): Promise<string>;
+export declare function arrayBufferToString(arrayBuffer: Uint8Array): Promise<string>;
+export declare const generateRandomKey: (length: number) => Promise<string>;
+export declare const generateRandomUint8Array: (length: number) => Promise<Uint8Array>;
+export declare const getRandomValues: any;
+export declare const concatUint8Arrays: (...arrays: Uint8Array[]) => Uint8Array;
