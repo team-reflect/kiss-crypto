@@ -25,7 +25,7 @@
       ".": [
         "./dist/index.d.ts"
       ],
-      "./hash-password": [
+      "hash-password": [
         "./dist/hash-password.d.ts"
       ]
     }
