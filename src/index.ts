@@ -137,14 +137,14 @@ export function decrypt({
  * @param cipherblob - The encrypted message as a Uint8Array.
  * @returns A Promise that resolves to the decrypted plaintext string or null if decryption fails.
  */
-export const decryptBlobAsString = async ({
+export const decryptBlobAsString = ({
   key,
   cipherblob,
 }: {
   key: HexString
   cipherblob: EncryptedBlobMessage
-}): Promise<Utf8String | null> => {
-  const decryptedBlob = await decryptBlob({key, cipherblob})
+}): Utf8String | null => {
+  const decryptedBlob = decryptBlob({key, cipherblob})
 
   if (!decryptedBlob) return null
 
