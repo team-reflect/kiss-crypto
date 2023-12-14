@@ -78,14 +78,14 @@ export function encrypt({
  * @param plaintext - The plaintext string to encrypt.
  * @returns A Promise that resolves to the encrypted message as a Uint8Array.
  */
-export const encryptStringAsBlob = async ({
+export const encryptStringAsBlob = ({
   key,
   plaintext,
 }: {
   key: HexString
   plaintext: Utf8String
-}): Promise<EncryptedBlobMessage> => {
-  const plainblob = await stringToArrayBuffer(plaintext)
+}): EncryptedBlobMessage => {
+  const plainblob = utf8ToBytes(plaintext)
 
   return encryptBlob({key, plainblob})
 }
