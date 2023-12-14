@@ -10,6 +10,6 @@
     "skipLibCheck": true,
     "types": ["vitest/globals"]
   },
-  "include": ["src", "*.ts", "*.js"],
+  "include": ["src"],
   "exclude": ["node_modules"]
 }

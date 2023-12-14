@@ -37,7 +37,7 @@
     "build": "mkdir -p dist && rm -rf dist && tsc --build tsconfig.build.json",
     "prepack": "yarn build",
     "fix": "eslint . --fix && prettier --write .",
-    "lint": "eslint src/**/*.ts",
+    "lint": "eslint . && tsc --noEmit",
     "size": "size-limit",
     "analyze": "size-limit --why"
   },
