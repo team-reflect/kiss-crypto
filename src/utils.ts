@@ -1,5 +1,5 @@
-import {bytesToHex, randomBytes} from '@noble/hashes/utils'
-import {base64} from '@scure/base'
+import { bytesToHex, randomBytes } from '@noble/hashes/utils'
+import { base64 } from '@scure/base'
 
 export function arrayBufferToBase64(arrayBuffer: Uint8Array): string {
   return base64.encode(arrayBuffer)
