@@ -9,10 +9,10 @@ import {
   generateEncryptionKey,
   generateSalt,
   hash,
-} from '.'
-import {hashPassword} from './hash-password'
+} from './index.js'
+import {hashPassword} from './hash-password.js'
 
-import {arrayBufferToString} from './utils'
+import {arrayBufferToString} from './utils.js'
 
 it('encrypts/decrypts plaintext', function () {
   const key = generateEncryptionKey()
