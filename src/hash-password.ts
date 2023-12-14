@@ -1,7 +1,7 @@
 import {hexToBytes} from '@noble/hashes/utils'
 import {argon2id} from 'hash-wasm'
-import {Defaults} from './defaults'
-import {HexString, Utf8String} from './types'
+import {Defaults} from './defaults.js'
+import type {HexString, Utf8String} from './types.js'
 
 /**
  * Derives a key from a password and salt using

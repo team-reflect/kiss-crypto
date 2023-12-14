@@ -2,11 +2,24 @@
   "name": "kiss-crypto",
   "version": "0.2.9-beta.4",
   "description": "",
+  "type": "module",
   "main": "dist/index.js",
   "typings": "dist/index.d.ts",
   "files": [
     "dist/**/*"
   ],
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js",
+      "default": "./dist/index.js"
+    },
+    "./hash-password": {
+      "types": "./dist/hash-password.d.ts",
+      "import": "./dist/hash-password.js",
+      "default": "./dist/hash-password.js"
+    }
+  },
   "scripts": {
     "test": "TZ=UTC vitest",
     "build": "tsc --build tsconfig.build.json",

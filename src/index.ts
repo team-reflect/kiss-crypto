@@ -8,14 +8,14 @@ import type {
   EncryptedMessage,
   HexString,
   Utf8String,
-} from './types'
+} from './types.js'
 import {
   arrayBufferToBase64,
   arrayBufferToString,
   base64ToArrayBuffer,
   generateRandomKey,
-} from './utils'
-import {Defaults} from './defaults'
+} from './utils.js'
+import {Defaults} from './defaults.js'
 
 export type {Base64String, EncryptedBlobMessage, EncryptedMessage, HexString, Utf8String}
 
