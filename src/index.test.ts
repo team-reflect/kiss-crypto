@@ -8,6 +8,8 @@ import {
   generateSalt,
   hash,
   hashPassword,
+  decryptBlobAsString,
+  encryptStringAsBlob,
 } from '.'
 
 import {arrayBufferToString} from './utils'
@@ -120,6 +122,18 @@ it('sanity checks v001 ciphertext', function () {
     ciphertext,
     key,
   })
+
+  expect(decrypted).toEqual(plaintext)
+})
+
+it('encrypts/decrypts blobs as strings', async function () {
+  const key = await generateEncryptionKey()
+
+  const plaintext = 'hello world'
+
+  const cipherblob = await encryptStringAsBlob({plaintext, key})
+
+  const decrypted = await decryptBlobAsString({cipherblob, key})
 
   expect(decrypted).toEqual(plaintext)
 })
