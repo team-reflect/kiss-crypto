@@ -9,7 +9,7 @@
   ],
   "scripts": {
     "test": "TZ=UTC vitest",
-    "build": "tsc --build tsconfig.build.json",
+    "build": "mkdir -p dist && rm -rf dist && tsc --build tsconfig.build.json",
     "prepack": "yarn build",
     "lint": "eslint src/**/*.ts",
     "size": "size-limit",
