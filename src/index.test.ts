@@ -2,15 +2,15 @@ import {utf8ToBytes} from '@noble/hashes/utils'
 import {
   decrypt,
   decryptBlob,
+  decryptBlobAsString,
   encrypt,
   encryptBlob,
+  encryptStringAsBlob,
   generateEncryptionKey,
   generateSalt,
   hash,
-  hashPassword,
-  decryptBlobAsString,
-  encryptStringAsBlob,
 } from '.'
+import {hashPassword} from './hash-password'
 
 import {arrayBufferToString} from './utils'
 

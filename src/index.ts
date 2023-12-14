@@ -1,33 +1,25 @@
+import {xchacha20poly1305} from '@noble/ciphers/chacha'
+import {hkdf} from '@noble/hashes/hkdf'
+import {sha256} from '@noble/hashes/sha256'
 import {bytesToHex, concatBytes, hexToBytes, utf8ToBytes} from '@noble/hashes/utils'
+import type {
+  Base64String,
+  EncryptedBlobMessage,
+  EncryptedMessage,
+  HexString,
+  Utf8String,
+} from './types'
 import {
   arrayBufferToBase64,
   arrayBufferToString,
   base64ToArrayBuffer,
   generateRandomKey,
 } from './utils'
-import {xchacha20poly1305} from '@noble/ciphers/chacha'
-import {sha256} from '@noble/hashes/sha256'
-import {hkdf} from '@noble/hashes/hkdf'
-import {argon2id} from 'hash-wasm'
+import {Defaults} from './defaults'
 
-export type HexString = string
-export type Utf8String = string
-export type Base64String = string
-export type EncryptedMessage = string
-export type EncryptedBlobMessage = Uint8Array
+export type {Base64String, EncryptedBlobMessage, EncryptedMessage, HexString, Utf8String}
 
 const STRING_PARTITION = ':'
-
-export enum Defaults {
-  Version = '001',
-  ArgonLength = 32,
-  ArgonSaltLength = 16,
-  ArgonIterations = 5,
-  ArgonMemLimit = 67108864,
-  ArgonOutputKeyBytes = 64,
-  EncryptionKeyLength = 32,
-  EncryptionNonceLength = 24,
-}
 
 /**
  * Generates a random key in hex format
@@ -208,38 +200,6 @@ export function hash({
 }): HexString {
   const result = hkdf(sha256, utf8ToBytes(key), utf8ToBytes(salt), undefined, length)
   return bytesToHex(result)
-}
-
-/**
- * Derives a key from a password and salt using
- * argon2id (crypto_pwhash_ALG_DEFAULT).
- * @param password - Plain text string
- * @param salt - Hex salt string (use generateSalt())
- * @returns Derived key in hex format
- */
-export async function hashPassword({
-  password,
-  salt,
-  iterations = Defaults.ArgonIterations,
-  bytes = Defaults.ArgonMemLimit,
-  length = Defaults.ArgonLength,
-}: {
-  password: Utf8String
-  salt: HexString
-  iterations?: number
-  bytes?: number
-  length?: number
-}): Promise<HexString> {
-  return argon2id({
-    password,
-    salt: hexToBytes(salt),
-    iterations,
-    parallelism: 1,
-    memorySize: 65536,
-    maxmem: bytes,
-    hashLength: length,
-    outputType: 'hex',
-  })
 }
 
 // Private functions
