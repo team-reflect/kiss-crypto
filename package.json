@@ -1,13 +1,12 @@
 {
   "name": "kiss-crypto",
+  "type": "module",
   "version": "0.3.0-beta.0",
   "description": "",
-  "type": "module",
+  "author": "",
+  "license": "MIT",
   "main": "dist/index.js",
   "typings": "dist/index.d.ts",
-  "files": [
-    "dist/**/*"
-  ],
   "exports": {
     ".": {
       "types": "./dist/index.d.ts",
@@ -30,10 +29,14 @@
       ]
     }
   },
+  "files": [
+    "dist/**/*"
+  ],
   "scripts": {
     "test": "TZ=UTC vitest",
     "build": "mkdir -p dist && rm -rf dist && tsc --build tsconfig.build.json",
     "prepack": "yarn build",
+    "fix": "eslint . --fix && prettier --write .",
     "lint": "eslint src/**/*.ts",
     "size": "size-limit",
     "analyze": "size-limit --why"
@@ -44,24 +47,23 @@
       "limit": "950 kB"
     }
   ],
-  "author": "",
-  "license": "MIT",
-  "devDependencies": {
-    "@babel/preset-env": "^7.22.14",
-    "@babel/preset-typescript": "^7.22.11",
-    "@size-limit/preset-small-lib": "^8.2.6",
-    "@typescript-eslint/eslint-plugin": "^6.5.0",
-    "@typescript-eslint/parser": "^6.5.0",
-    "eslint": "^8.48.0",
-    "eslint-config-google": "^0.14.0",
-    "size-limit": "^8.2.6",
-    "typescript": "^5.2.2",
-    "vitest": "^0.34.3"
-  },
   "dependencies": {
     "@noble/ciphers": "0.4.1",
     "@noble/hashes": "1.3.3",
     "@scure/base": "1.1.5",
     "hash-wasm": "4.11.0"
+  },
+  "devDependencies": {
+    "@babel/preset-typescript": "^7.22.11",
+    "@ocavue/eslint-config": "^1.4.0",
+    "@size-limit/preset-small-lib": "^8.2.6",
+    "@typescript-eslint/eslint-plugin": "^6.5.0",
+    "@typescript-eslint/parser": "^6.5.0",
+    "eslint": "^8.55.0",
+    "eslint-config-google": "^0.14.0",
+    "prettier": "^3.1.0",
+    "size-limit": "^8.2.6",
+    "typescript": "^5.2.2",
+    "vitest": "^0.34.3"
   }
 }

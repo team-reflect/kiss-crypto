@@ -1,7 +1,9 @@
-import {xchacha20poly1305} from '@noble/ciphers/chacha'
-import {hkdf} from '@noble/hashes/hkdf'
-import {sha256} from '@noble/hashes/sha256'
-import {bytesToHex, concatBytes, hexToBytes, utf8ToBytes} from '@noble/hashes/utils'
+import { xchacha20poly1305 } from '@noble/ciphers/chacha'
+import { hkdf } from '@noble/hashes/hkdf'
+import { sha256 } from '@noble/hashes/sha256'
+import { bytesToHex, concatBytes, hexToBytes, utf8ToBytes } from '@noble/hashes/utils'
+
+import * as Defaults from './defaults.js'
 import type {
   Base64String,
   EncryptedBlobMessage,
@@ -15,9 +17,14 @@ import {
   base64ToArrayBuffer,
   generateRandomKey,
 } from './utils.js'
-import {Defaults} from './defaults.js'
 
-export type {Base64String, EncryptedBlobMessage, EncryptedMessage, HexString, Utf8String}
+export type {
+  Base64String,
+  EncryptedBlobMessage,
+  EncryptedMessage,
+  HexString,
+  Utf8String,
+}
 
 const STRING_PARTITION = ':'
 
@@ -70,16 +77,16 @@ export function encrypt({
  * @param plaintext - The plaintext string to encrypt.
  * @returns A Promise that resolves to the encrypted message as a Uint8Array.
  */
-export const encryptStringAsBlob = ({
+export function encryptStringAsBlob({
   key,
   plaintext,
 }: {
   key: HexString
   plaintext: Utf8String
-}): EncryptedBlobMessage => {
+}): EncryptedBlobMessage {
   const plainblob = utf8ToBytes(plaintext)
 
-  return encryptBlob({key, plainblob})
+  return encryptBlob({ key, plainblob })
 }
 
 /**
@@ -128,7 +135,7 @@ export function decrypt({
     throw new Error(`Invalid version: ${version}`)
   }
 
-  return xChaChaDecrypt({key, ciphertext, nonce})
+  return xChaChaDecrypt({ key, ciphertext, nonce })
 }
 
 /**
@@ -137,14 +144,14 @@ export function decrypt({
  * @param cipherblob - The encrypted message as a Uint8Array.
  * @returns A Promise that resolves to the decrypted plaintext string or null if decryption fails.
  */
-export const decryptBlobAsString = ({
+export function decryptBlobAsString({
   key,
   cipherblob,
 }: {
   key: HexString
   cipherblob: EncryptedBlobMessage
-}): Utf8String | null => {
-  const decryptedBlob = decryptBlob({key, cipherblob})
+}): Utf8String | null {
+  const decryptedBlob = decryptBlob({ key, cipherblob })
 
   if (!decryptedBlob) return null
 
@@ -180,7 +187,7 @@ export function decryptBlob({
     Defaults.Version.length + Defaults.EncryptionNonceLength,
   )
 
-  return xChaChaDecryptBlob({key, cipherblob, nonceBuffer})
+  return xChaChaDecryptBlob({ key, cipherblob, nonceBuffer })
 }
 
 /**
@@ -213,7 +220,9 @@ function xChaChaEncrypt({
   plaintext: Utf8String
   nonce: HexString
 }): Base64String {
-  if (nonce.length !== 48) throw Error('Nonce must be 24 bytes')
+  if (nonce.length !== 48) {
+    throw new Error('Nonce must be 24 bytes')
+  }
   const plainblob = new TextEncoder().encode(plaintext)
   const arrayBuffer = xchacha20poly1305(hexToBytes(key), hexToBytes(nonce)).encrypt(
     plainblob,
@@ -231,7 +240,7 @@ function xChaChaEncryptBlob({
   nonceBuffer: Uint8Array
 }): Uint8Array {
   if (nonceBuffer.length !== 24) {
-    throw Error('nonceBuffer must be 24 bytes')
+    throw new Error('nonceBuffer must be 24 bytes')
   }
   return xchacha20poly1305(hexToBytes(key), nonceBuffer).encrypt(plainblob)
 }

@@ -1,0 +1,26 @@
+{
+  "plugins": [
+    "prettier-plugin-svelte",
+    "prettier-plugin-astro",
+    "prettier-plugin-tailwindcss"
+  ],
+  "semi": false,
+  "singleQuote": true,
+  "htmlWhitespaceSensitivity": "ignore",
+  "overrides": [
+    {
+      "files": "*.svelte",
+      "options": {
+        "parser": "svelte"
+      }
+    },
+    {
+      "files": "*.astro",
+      "options": {
+        "parser": "astro"
+      }
+    }
+  ],
+  "tailwindFunctions": ["clsx"],
+  "svelteIndentScriptAndStyle": false
+}
