@@ -47,9 +47,31 @@ it('encrypts/decrypts blobs', function () {
   const decrypted = decryptBlob({
     cipherblob,
     key,
+  })!
+
+  expect(arrayBufferToString(decrypted)).toEqual(plaintext)
+})
+
+// TODO: This test is failing
+it.fails('decrypts Node.js Buffer', function () {
+  const key = generateEncryptionKey()
+
+  const plaintext = 'hello world'
+
+  const plainblob: Uint8Array = utf8ToBytes(plaintext)
+
+  const cipherblob: Uint8Array = encryptBlob({
+    plainblob,
+    key,
   })
 
-  expect(arrayBufferToString(decrypted!)).toEqual(plaintext)
+  const cipherblobBuffer: Buffer = Buffer.from(cipherblob)
+
+  const decrypted: Uint8Array = decryptBlob({
+    cipherblob: cipherblobBuffer,
+    key,
+  })!
+  expect(arrayBufferToString(decrypted)).toEqual(plaintext)
 })
 
 it('hashes a password', async function () {
