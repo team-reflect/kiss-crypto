@@ -20,6 +20,16 @@
       "default": "./dist/hash-password.js"
     }
   },
+  "typesVersions": {
+    "*": {
+      ".": [
+        "./dist/index.d.ts"
+      ],
+      "./hash-password": [
+        "./dist/hash-password.d.ts"
+      ]
+    }
+  },
   "scripts": {
     "test": "TZ=UTC vitest",
     "build": "tsc --build tsconfig.build.json",
