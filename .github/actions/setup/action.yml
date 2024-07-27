@@ -1,0 +1,21 @@
+name: Setup
+description: Setup the environment
+
+inputs:
+  node-version:
+    description: The version of node.js
+    required: false
+    default: '20'
+
+runs:
+  using: composite
+  steps:
+    - name: Setup node
+      uses: actions/setup-node@v4
+      with:
+        node-version: ${{ inputs.node-version }}
+        cache: yarn
+
+    - name: Install
+      run: yarn install
+      shell: bash
