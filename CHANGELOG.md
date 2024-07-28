@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.3.3](https://github.com/team-reflect/kiss-crypto/compare/v0.3.2...v0.3.3) (2024-07-28)
+
+
+### Miscellaneous Chores
+
+* fix publish workflow and trigger a release ([57741ca](https://github.com/team-reflect/kiss-crypto/commit/57741cae46341e0e44e464c89c87124a46e6b27d))
+
 ## [0.3.2](https://github.com/team-reflect/kiss-crypto/compare/v0.3.1...v0.3.2) (2024-07-27)
 
 
