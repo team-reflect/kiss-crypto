@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.3.4](https://github.com/team-reflect/kiss-crypto/compare/v0.3.3...v0.3.4) (2024-07-28)
+
+
+### Bug Fixes
+
+* update dependencies ([#16](https://github.com/team-reflect/kiss-crypto/issues/16)) ([4b44314](https://github.com/team-reflect/kiss-crypto/commit/4b44314ad5dacaf528e9db161ff66a1eb2297ccb))
+
 ## [0.3.3](https://github.com/team-reflect/kiss-crypto/compare/v0.3.2...v0.3.3) (2024-07-28)
 
 
